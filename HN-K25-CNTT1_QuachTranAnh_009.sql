@@ -283,12 +283,15 @@ before delete on employees
 for each row
 begin
 	declare checking int;
+    
     select employee_id into checking
     from work_assignments
     where completed_date is null and old.employee_id = employee_id;
+    
 	if old.employee_id = checking then
     signal sqlstate '45000'
     set message_text = 'Nhân viên đó vẫn còn công việc chưa hoàn thành';
+    
     end if;
 end
 // delimiter ;
@@ -315,10 +318,13 @@ begin
     
     if checking < 20000000 then
     set p_message = 'Ngân sách thấp';
+    
     elseif checking between 20000000 and 40000000 then
     set p_message = 'Ngân sách trung bình';
+    
     elseif checking > 40000000 then
     set p_message = 'Ngân sách cao';
+    
     end if;
 end
 // delimiter ;
@@ -364,6 +370,7 @@ begin
     if checking is not null then 
     set p_ann = 'Công việc đã hoàn thành rồi';
     rollback;
+    
     else
     update work_assignments
     set completed_date = current_date()
@@ -373,6 +380,7 @@ begin
     set project_status = 'Done'
     where project_id = doubcheck;
     set p_ann = 'Công việc đã xong';
+    
     end if;
     commit;
 end
